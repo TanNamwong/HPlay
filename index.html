@@ -1,0 +1,1304 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f2f7ff">
+<meta name="description" content="HPlay – รวมลิงก์เว็บไซต์ที่ใช้บ่อย">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>HPlay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: bright, playful movie-launcher. Red = brand/primary, gold = highlights, blue = focus/edit, yellow = favourites, green = success */
+:root{
+  --bg:#f2f7ff; --surface:#ffffff; --surface-2:#eaf1ff; --line:#d9e4f7;
+  --text:#1a2238; --muted:#5f6b86;
+  --accent:#f0283c; --accent-2:#ff6a3d; --accent-soft:#ffe9ec;
+  --gold:#f2a900; --gold-ink:#a86a00; --blue:#1e90ff; --yellow:#ffc800; --green:#16b364; --danger:#e11d48;
+  --shadow:0 1px 2px rgba(26,34,56,.06),0 10px 24px -14px rgba(26,34,56,.28);
+  --shadow-lg:0 24px 60px -20px rgba(26,34,56,.45);
+  --radius:16px; --gut:max(16px,env(safe-area-inset-left,0px)); color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:"Noto Sans Thai","Inter","Sarabun",system-ui,-apple-system,"Segoe UI",sans-serif;
+  line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
+main{flex:1;width:100%;max-width:1160px;margin:0 auto;padding-block:0 40px;padding-left:max(clamp(16px,4vw,32px),env(safe-area-inset-left,0px));padding-right:max(clamp(16px,4vw,32px),env(safe-area-inset-right,0px))}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.muted{color:var(--muted)}
+[hidden]{display:none!important}
+
+/* ===== Header ===== */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 82%,transparent);
+  backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);
+  border-bottom:1px solid var(--line)}
+.top-inner{max-width:1160px;margin:0 auto;height:66px;padding-block:0;padding-left:max(clamp(16px,4vw,32px),env(safe-area-inset-left,0px));padding-right:max(clamp(16px,4vw,32px),env(safe-area-inset-right,0px));
+  display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);flex-shrink:0}
+.logo{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 16px -6px var(--accent),inset 0 0 0 1.5px rgba(255,255,255,.35)}
+.brand-text{display:flex;flex-direction:column;line-height:1.1}
+.brand-text b{font-size:17px;letter-spacing:.3px}
+.brand-text small{font-size:9.5px;letter-spacing:2.6px;color:var(--gold-ink);font-weight:700}
+.search{flex:1;max-width:460px;margin-left:auto;display:flex;align-items:center;gap:8px;
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 12px;height:42px;color:var(--muted);
+  transition:border-color .15s,box-shadow .15s}
+.search:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 20%,transparent)}
+.search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);height:100%}
+.search input::placeholder{color:var(--muted)}
+.top-actions{display:flex;align-items:center;gap:8px}
+
+/* ===== Buttons ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:42px;padding:0 16px;border-radius:12px;
+  border:1px solid transparent;font-weight:600;font-size:14px;transition:transform .08s,filter .15s,background .15s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 8px 18px -8px var(--accent)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{background:var(--surface);border-color:var(--line)}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn.danger{background:var(--danger);color:#fff}
+.btn.danger-ghost{background:transparent;color:var(--danger);border-color:color-mix(in srgb,var(--danger) 40%,transparent)}
+.btn.sm{height:34px;padding:0 12px}
+.icon-btn{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--surface);
+  display:grid;place-items:center;color:var(--muted);transition:background .15s,color .15s;flex-shrink:0}
+.icon-btn:hover{background:var(--surface-2);color:var(--text)}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* ===== Intro & toolbar ===== */
+.intro{padding:26px 0 10px}
+.intro h1{margin:0;font-size:clamp(22px,4vw,30px);letter-spacing:-.2px}
+.intro p{margin:4px 0 0;font-size:14px}
+.toolbar{display:flex;align-items:center;gap:12px;padding:10px 0 18px}
+.chips{display:flex;gap:8px;overflow-x:auto;flex:1;padding:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);
+  font-size:13.5px;font-weight:500;color:var(--muted);transition:all .15s}
+.chip:hover{color:var(--text)}
+.chip[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.chip .n{opacity:.7;margin-left:5px;font-size:12px}
+.select{height:36px;border-radius:10px;border:1px solid var(--line);background:var(--surface);padding:0 10px;font-size:13px;color:var(--text);flex-shrink:0}
+
+/* ===== Cards ===== */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);overflow:hidden;transition:transform .15s,border-color .15s,box-shadow .15s;
+  animation:rise .3s both}
+.card:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--c) 55%,var(--line))}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--c)}
+.card-link{display:flex;align-items:center;gap:14px;padding:18px 54px 18px 16px;text-decoration:none;color:inherit;min-height:84px}
+.ico{width:50px;height:50px;border-radius:14px;flex-shrink:0;display:grid;place-items:center;font-size:25px;font-weight:700;
+  background:color-mix(in srgb,var(--c,var(--accent)) 16%,var(--surface));color:var(--c,var(--accent));overflow:hidden}
+.ico img{width:28px;height:28px;border-radius:6px;object-fit:contain}
+.card-body{min-width:0;display:flex;flex-direction:column;gap:1px}
+.card-body b{font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-body small{color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{display:inline-block;margin-top:5px;align-self:flex-start;font-size:11px;padding:1px 8px;border-radius:999px;
+  background:var(--surface-2);color:var(--muted)}
+.card-tools{position:absolute;top:10px;right:8px;display:flex;flex-direction:column;gap:2px}
+.mini{width:34px;height:34px;border-radius:9px;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;font-size:17px}
+.mini:hover{background:var(--surface-2);color:var(--text)}
+.mini.fav.on{color:var(--yellow)}
+.card .edit{opacity:0;transition:opacity .15s}
+.card:hover .edit,.card:focus-within .edit{opacity:1}
+@media(hover:none){.card .edit{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ===== Empty ===== */
+.empty{text-align:center;padding:60px 20px;border:1.5px dashed var(--line);border-radius:var(--radius);background:var(--surface)}
+.empty-ico{font-size:40px}
+.empty h2{margin:8px 0 4px}
+.empty .btn{margin-top:14px}
+
+/* ===== Dialog ===== */
+dialog{border:0;padding:0;border-radius:20px;background:var(--surface);color:var(--text);
+  width:min(480px,calc(100vw - 24px));max-height:calc(100dvh - 24px);box-shadow:var(--shadow-lg);overflow:auto}
+dialog::backdrop{background:rgba(8,12,26,.55);backdrop-filter:blur(3px)}
+dialog[open]{animation:pop .18s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+dialog form{padding:22px}
+dialog.small{width:min(400px,calc(100vw - 24px))}
+dialog h2{margin:0;font-size:19px}
+.dlg-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.dlg-head .icon-btn{width:36px;height:36px}
+.preview{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:var(--surface-2);margin-bottom:16px;border-top:3px solid var(--c,var(--accent))}
+.preview div:last-child{min-width:0;display:flex;flex-direction:column}
+.preview b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preview small{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.field{display:block;margin-bottom:14px}
+.field>span{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.field em{color:var(--danger);font-style:normal}
+.field input[type=text],.field textarea{width:100%;height:44px;border-radius:11px;border:1px solid var(--line);background:var(--bg);padding:0 13px;outline:0;font-size:15px;transition:border-color .15s,box-shadow .15s}
+.field input:focus{border-color:var(--blue);box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 20%,transparent)}
+.field input.bad{border-color:var(--danger)}
+.err{display:block;color:var(--danger);margin-top:5px;font-size:12.5px}
+.emoji-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.emoji-row button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:19px}
+.emoji-row button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.swatches{display:flex;gap:10px;flex-wrap:wrap}
+.swatch{width:30px;height:30px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 1.5px var(--line);background:var(--c)}
+.swatch[aria-checked="true"]{box-shadow:0 0 0 2.5px var(--c)}
+.dlg-foot{display:flex;align-items:center;gap:8px;margin-top:18px}
+.spacer{flex:1}
+
+/* ===== Menu / toast / update ===== */
+.popmenu{position:fixed;z-index:30;top:calc(60px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));min-width:220px;background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;box-shadow:var(--shadow-lg);padding:6px;animation:pop .15s}
+.popmenu button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:11px 12px;border-radius:9px;font-size:14px}
+.popmenu button:hover{background:var(--surface-2)}
+.popmenu .danger{color:var(--danger)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,30px);opacity:0;pointer-events:none;
+  background:var(--surface-2);color:var(--text);border:1px solid var(--line);border-left:4px solid var(--green);padding:11px 18px;border-radius:12px;font-size:14px;box-shadow:var(--shadow-lg);transition:all .25s;z-index:50;max-width:90vw}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px 16px;border-top:1px solid var(--line)}
+
+/* ===== Responsive ===== */
+@media(max-width:720px){
+  .top-inner{height:auto;padding-top:10px;padding-bottom:10px;flex-wrap:wrap;gap:10px}
+  .brand-text small{display:none}
+  .top-actions{margin-left:auto}
+  .search{order:3;flex:1 0 100%;max-width:none;margin:0}
+  .btn.primary span{display:inline}
+  .popmenu{top:calc(112px + env(safe-area-inset-top,0px))}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== v2: launcher grid + bottom bar ===== */
+.top-inner{height:58px}
+.search{margin-left:0;max-width:none}
+.toolbar{padding:12px 0 4px}
+.chip{height:32px;padding:0 12px;font-size:13px}
+.statusrow{display:flex;justify-content:space-between;gap:10px;padding:6px 2px 14px;font-size:12.5px}
+.editnote{color:var(--blue);font-weight:600}
+main{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:12px 6px}
+.tile{position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;padding:8px 4px 6px;border-radius:14px;
+  text-decoration:none;color:var(--text);-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;
+  transition:background .15s,transform .1s;animation:rise .25s both}
+.tile:hover{background:var(--surface-2)}
+.tile:active{transform:scale(.95)}
+.tile .ico{width:58px;height:58px;border-radius:17px;font-size:28px;box-shadow:var(--shadow);
+  background:color-mix(in srgb,var(--c) 18%,var(--surface));border:1px solid color-mix(in srgb,var(--c) 28%,var(--line))}
+.tname{font-size:12px;line-height:1.3;text-align:center;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word}
+.star{position:absolute;top:4px;right:calc(50% - 38px);width:18px;height:18px;border-radius:50%;background:var(--surface);color:var(--yellow);
+  font-size:11px;display:grid;place-items:center;box-shadow:0 0 0 1px var(--line)}
+.editing .tile{background:var(--surface-2)}
+.editing .tile::after{content:"✎";position:absolute;top:2px;left:calc(50% - 40px);width:20px;height:20px;border-radius:50%;
+  background:var(--blue);color:#04141f;font-size:11px;display:grid;place-items:center}
+.editing .tile .ico{animation:wiggle .35s ease-in-out infinite alternate}
+@keyframes wiggle{from{transform:rotate(-1.5deg)}to{transform:rotate(1.5deg)}}
+.chk{display:flex;align-items:center;gap:10px;margin:2px 0 16px;font-size:14px;font-weight:500;cursor:pointer}
+.chk input{width:20px;height:20px;accent-color:var(--accent)}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:color-mix(in srgb,var(--surface) 92%,transparent);
+  backdrop-filter:saturate(1.4) blur(16px);-webkit-backdrop-filter:saturate(1.4) blur(16px);border-top:1px solid var(--line);
+  padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px));padding-bottom:env(safe-area-inset-bottom,0px)}
+.bar-inner{max-width:560px;margin:0 auto;height:62px;display:grid;grid-template-columns:repeat(5,1fr);align-items:center}
+.nav{border:0;background:transparent;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  height:100%;font-size:11px;font-weight:500;border-radius:12px;transition:color .15s}
+.nav:hover{color:var(--text)}
+.nav[aria-current="page"],.nav[aria-pressed="true"]{color:var(--accent)}
+.nav.add{overflow:visible}
+.fab{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;color:#fff;margin-top:-18px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 8px 20px -6px var(--accent),0 0 0 5px var(--surface)}
+.popmenu{top:auto;bottom:calc(72px + env(safe-area-inset-bottom,0px));right:max(12px,env(safe-area-inset-right,0px));animation:pop .15s}
+.menu-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 12px 8px;font-size:13px;color:var(--muted);border-bottom:1px solid var(--line);margin-bottom:4px}
+.menu-row .select{height:34px}
+.toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+@media(max-width:480px){.brand-text{display:none}.top-inner{gap:10px}}
+@media(min-width:900px){.grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}}
+
+/* ===== v4: bright skin ===== */
+.top{border-bottom:0;background:color-mix(in srgb,var(--surface) 90%,transparent);box-shadow:0 6px 20px -14px rgba(26,34,56,.4)}
+.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;
+  background:linear-gradient(90deg,var(--accent) 0 20%,var(--gold) 20% 40%,var(--blue) 40% 60%,var(--yellow) 60% 80%,var(--green) 80% 100%)}
+.top-inner{height:60px}
+body{background:radial-gradient(110% 45% at 50% -8%,color-mix(in srgb,var(--accent) 13%,transparent),transparent 65%),radial-gradient(70% 35% at 100% 0%,color-mix(in srgb,var(--blue) 12%,transparent),transparent 70%),var(--bg);background-attachment:fixed}
+.chip{border-radius:999px;font-weight:600}
+.chip[aria-selected="true"]{background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 14px -6px var(--accent)}
+.tile{background:var(--surface);box-shadow:var(--shadow);border-radius:16px;padding:10px 4px 8px}
+.tile:hover{background:var(--surface)}
+.tile .ico{background:linear-gradient(160deg,color-mix(in srgb,var(--c) 34%,#fff),color-mix(in srgb,var(--c) 12%,#fff));
+  border:1px solid color-mix(in srgb,var(--c) 40%,#fff);box-shadow:0 8px 16px -10px var(--c);color:color-mix(in srgb,var(--c) 70%,#1a2238)}
+.tile:hover .ico{box-shadow:0 10px 22px -8px var(--c)}
+.statusrow #summary{color:var(--gold-ink);font-weight:700}
+.bar{border-top:0;background:var(--surface);box-shadow:0 -8px 24px -14px rgba(26,34,56,.35)}
+.bar::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--green),var(--yellow),var(--blue),var(--gold),var(--accent))}
+.nav{font-weight:600}
+.nav .em{font-size:22px;line-height:1;filter:grayscale(.55);opacity:.8;transition:all .15s}
+.nav[aria-current="page"] .em,.nav[aria-pressed="true"] .em{filter:none;opacity:1;transform:scale(1.15)}
+.nav[aria-current="page"],.nav[aria-pressed="true"]{color:var(--accent)}
+.fab{box-shadow:0 10px 22px -6px var(--accent),0 0 0 5px var(--surface)}
+.popmenu button .em{display:inline-block;width:1.6em}
+.toast{background:var(--text);color:#fff;border:0;border-left:4px solid var(--green)}
+.emoji-row button{font-size:20px}
+.empty{background:var(--surface)}
+/* ===== v5: header fix, compact grid, curved rainbow ===== */
+.top-inner{flex-wrap:nowrap;height:60px;padding-top:0;padding-bottom:0}
+.search{order:0;flex:1 1 auto;min-width:0;max-width:none;margin:0}
+.grid{grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:8px 6px}
+.tile{padding:8px 2px 6px;gap:5px;border-radius:14px}
+.tile .ico{width:46px;height:46px;border-radius:14px;font-size:23px}
+.tname{font-size:11.5px}
+.star{top:3px;right:calc(50% - 31px);width:16px;height:16px;font-size:10px}
+.editing .tile::after{left:calc(50% - 33px);width:18px;height:18px;font-size:10px}
+@media(min-width:900px){.grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}}
+.bar{overflow:visible}
+.bar::before{-webkit-mask:linear-gradient(90deg,#000 0 calc(50% - 27px),transparent calc(50% - 27px) calc(50% + 27px),#000 calc(50% + 27px));
+  mask:linear-gradient(90deg,#000 0 calc(50% - 27px),transparent calc(50% - 27px) calc(50% + 27px),#000 calc(50% + 27px))}
+.arc{position:absolute;left:50%;top:-20px;width:80px;height:30px;margin-left:-40px;pointer-events:none;overflow:visible}
+
+.notices{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(78px + env(safe-area-inset-bottom,0px));width:min(520px,calc(100vw - 24px));z-index:35;display:flex;flex-direction:column;gap:8px}
+.notice{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 8px 10px 14px;box-shadow:var(--shadow-lg);animation:pop .2s}
+#updateBar{border-left:5px solid var(--green)}
+#installBar{border-left:5px solid var(--blue)}
+.nem{font-size:24px}
+.notice .txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.notice .txt b{font-size:14px}
+.notice .txt small{color:var(--muted);font-size:12px}
+.toast{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
+/* ===== v6: tablet / landscape / car head-unit ===== */
+:root{--ico:46px;--icofs:23px;--tname:11.5px;--tilemin:62px;--navh:62px;--navfs:11px;--navem:22px;--ctl:42px}
+@media(min-width:768px){:root{--ico:58px;--icofs:28px;--tname:13px;--tilemin:92px;--navh:68px;--navfs:12.5px;--navem:26px}}
+@media(min-width:768px) and (min-height:700px){main,.top-inner{max-width:1280px}}
+html.big{--ico:76px;--icofs:36px;--tname:16px;--tilemin:116px;--navh:76px;--navfs:14px;--navem:32px;--ctl:54px}
+@media (orientation:landscape) and (min-width:900px) and (max-height:620px){:root{--ico:76px;--icofs:36px;--tname:16px;--tilemin:116px;--navfs:14px;--navem:32px;--ctl:54px}}
+.grid{grid-template-columns:repeat(auto-fill,minmax(var(--tilemin),1fr))}
+.tile{gap:calc(var(--ico)*.12)}
+.tile .ico{width:var(--ico);height:var(--ico);font-size:var(--icofs);border-radius:calc(var(--ico)*.3)}
+.tname{font-size:var(--tname)}
+.star{right:calc(50% - var(--ico)/2 - 8px)}
+.editing .tile::after{left:calc(50% - var(--ico)/2 - 10px)}
+.bar-inner{height:var(--navh)}
+.nav{font-size:var(--navfs)}
+.nav .em{font-size:var(--navem)}
+.btn,.search{height:var(--ctl)}
+.chip{height:calc(var(--ctl)*.78);font-size:calc(var(--ctl)*.31)}
+.top-inner{height:calc(var(--ctl) + 18px)}
+html.big .field input[type=text]{height:54px;font-size:17px}
+html.big .menu-row,html.big .popmenu button{font-size:16px;padding-top:14px;padding-bottom:14px}
+.nodlg dialog[open]{position:fixed;left:0;right:0;top:50%;transform:translateY(-50%);margin:0 auto;z-index:100;box-shadow:0 0 0 100vmax rgba(8,12,26,.55),var(--shadow-lg)}
+/* ===== v7: recent row, drag reorder, clipboard bar, PIN lock ===== */
+.notices{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(78px + env(safe-area-inset-bottom,0px));width:min(520px,calc(100vw - 24px));z-index:35;display:flex;flex-direction:column;gap:8px}
+.notice{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 8px 10px 14px;box-shadow:var(--shadow-lg);animation:pop .2s}
+.nem{font-size:24px}
+.notice .txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.notice .txt b{font-size:14px}
+.notice .txt small{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#clipBar{border-left:5px solid var(--gold)}
+.recent{display:flex;align-items:center;gap:8px;margin:-4px 0 14px}
+.rlabel{font-size:12.5px;font-weight:700;color:var(--muted);flex-shrink:0}
+.rlist{display:flex;gap:8px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none;padding:3px 2px}
+.rlist::-webkit-scrollbar{display:none}
+.rchip{flex-shrink:0;display:flex;align-items:center;gap:7px;height:36px;padding:0 12px 0 6px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--text);text-decoration:none;font-size:13px;font-weight:600;box-shadow:var(--shadow)}
+.rico{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px;background:color-mix(in srgb,var(--c) 22%,#fff);color:color-mix(in srgb,var(--c) 70%,#1a2238)}
+.rname{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile.dragging{animation:none;pointer-events:none;z-index:30;opacity:.92;box-shadow:var(--shadow-lg)}
+.tile.dropto{outline:3px dashed var(--blue);outline-offset:-3px}
+.editing .tile{cursor:grab}
+.lock{position:absolute;top:calc(8px + var(--ico) - 15px);right:calc(50% - var(--ico)/2 - 6px);width:20px;height:20px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:11px;box-shadow:0 0 0 1px var(--line)}
+.pin{width:100%;height:52px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);text-align:center;font-size:24px;letter-spacing:.4em;margin-top:10px;outline:0}
+.pin:focus{border-color:var(--blue);box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 20%,transparent)}
+
+/* ===== v8: browser picker ===== */
+.brlist{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 14px}
+.opt{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);font-size:14px;font-weight:600;cursor:pointer;min-width:0}
+.opt input{accent-color:var(--accent);flex-shrink:0}
+.opt span{min-width:0;overflow-wrap:anywhere}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt:first-child{grid-column:1/-1}
+#fBrowser{width:100%;height:44px;font-size:15px}
+@media(max-width:380px){.brlist{grid-template-columns:1fr}}
+
+/* ===== v10: big colourful wordmark ===== */
+.logo{width:46px;height:46px;border-radius:14px;box-shadow:0 8px 18px -6px var(--accent),inset 0 0 0 2px rgba(255,255,255,.4);transform:rotate(-6deg)}
+.logo .play{font-size:22px;line-height:1;margin-left:3px;text-shadow:0 2px 0 rgba(0,0,0,.18)}
+.brand{gap:12px}
+.brand-text{display:flex;flex-direction:column;line-height:1}
+.brand-text .wm{font-family:"Baloo 2","Noto Sans Thai","Inter",system-ui,sans-serif;font-size:30px;font-weight:800;letter-spacing:.5px;display:flex;line-height:1}
+.wm i{font-style:normal;text-shadow:0 2px 0 rgba(26,34,56,.14);display:inline-block;transition:transform .15s}
+.wm i:nth-child(1){color:#f0283c}.wm i:nth-child(2){color:#f2a900}.wm i:nth-child(3){color:#1e90ff}.wm i:nth-child(4){color:#f5b800}.wm i:nth-child(5){color:#16b364}
+.wm i:nth-child(odd){transform:translateY(-1px) rotate(-3deg)}.wm i:nth-child(even){transform:translateY(1px) rotate(3deg)}
+.brand-text small{font-size:10px;letter-spacing:2px;margin-top:3px;display:block}
+.top-inner{height:68px}
+@media(max-width:480px){.brand-text{display:flex}.brand-text small{display:none}.brand-text .wm{font-size:26px}.logo{width:42px;height:42px}.brand{gap:9px}.top-inner{gap:8px}}
+@media (orientation:landscape) and (max-height:480px){.top-inner{height:56px}.brand-text .wm{font-size:24px}.brand-text small{display:none}}
+
+body::before{top:0;left:0;right:0}
+dialog{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px)}
+
+/* แนวนอน (แท็บเล็ตแนวนอน / จอรถ): เมนูย้ายไปแถบซ้าย */
+@media (orientation:landscape) and (min-width:700px){
+  main{padding-left:calc(100px + max(clamp(16px,3vw,32px),env(safe-area-inset-left,0px)));padding-bottom:32px}
+  .bar{top:calc(var(--ctl) + 18px + env(safe-area-inset-top,0px));bottom:0;right:auto;left:0;
+    width:calc(92px + env(safe-area-inset-left,0px));padding:8px 6px 8px max(6px,env(safe-area-inset-left,0px));
+    box-shadow:10px 0 24px -16px rgba(26,34,56,.35)}
+  .bar::before{top:0;bottom:0;left:auto;right:0;width:4px;height:auto;-webkit-mask:none;mask:none;
+    background:linear-gradient(180deg,var(--accent) 0 20%,var(--gold) 20% 40%,var(--blue) 40% 60%,var(--yellow) 60% 80%,var(--green) 80% 100%)}
+  .arc{display:none}
+  .bar-inner{height:100%;max-width:none;grid-template-columns:1fr;grid-template-rows:repeat(5,1fr);gap:2px}
+  .nav{height:auto;min-height:60px}
+  .fab{margin-top:0;width:60px;height:60px;box-shadow:0 8px 20px -6px var(--accent),0 0 0 4px var(--surface),0 0 0 6px color-mix(in srgb,var(--gold) 50%,transparent)}
+  .popmenu{bottom:16px;left:calc(104px + env(safe-area-inset-left,0px));right:auto}
+  .notices{left:calc(50% + 50px);bottom:16px}
+  .toast{bottom:24px;left:calc(50% + 50px)}
+}
+@media (orientation:landscape) and (max-height:480px){
+  .top-inner{height:50px}.nav{min-height:48px}.nav .em{font-size:22px}.nav span:not(.em):not(.fab){font-size:11px}
+}
+@supports not (color: color-mix(in srgb, red, blue)){
+  .tile .ico{background:#f4f6fb;border:1px solid var(--line);color:var(--text)}
+  .top{background:#ffffffee}
+  .bar{background:#fff}
+  .search:focus-within,.field input:focus{border-color:var(--blue)}
+}
+
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);z-index:25;background:var(--bg)}
+
+.field textarea{height:auto;padding:10px 13px;font:12.5px/1.5 ui-monospace,Menlo,Consolas,monospace;resize:vertical;min-height:140px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.hint{color:var(--muted);font-size:12.5px;margin:4px 0 0}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <a class="brand" href="#" aria-label="HPlay">
+      <span class="logo" aria-hidden="true"><span class="play">▶</span></span>
+      <span class="brand-text"><b class="wm" aria-label="HPlay"><i>H</i><i>P</i><i>l</i><i>a</i><i>y</i></b><small>🎬 MY LINKS 🍿</small></span>
+    </a>
+    <label class="search" for="search">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="search" type="search" placeholder="ค้นหาลิงก์…" autocomplete="off" spellcheck="false">
+    </label>
+  </div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <div id="chips" class="chips" role="tablist" aria-label="หมวดหมู่"></div>
+  </div>
+  <div class="statusrow">
+    <span id="summary" class="muted">กำลังโหลด…</span>
+    <span id="editNote" class="editnote" hidden>โหมดแก้ไข · แตะเพื่อแก้ไข · กดค้างแล้วลากเพื่อจัดลำดับ</span>
+  </div>
+
+  <div id="recent" class="recent" hidden>
+    <span class="rlabel">🕘 ใช้ล่าสุด</span>
+    <div id="recentList" class="rlist"></div>
+    <button id="recentClear" class="mini" aria-label="ล้างประวัติการเปิด" title="ล้างประวัติ">✕</button>
+  </div>
+
+  <section id="grid" class="grid" aria-live="polite"></section>
+
+  <div id="empty" class="empty" hidden>
+    <div class="empty-ico" aria-hidden="true">🍿</div>
+    <h2 id="emptyTitle">ยังไม่มีลิงก์</h2>
+    <p id="emptyText" class="muted">กดปุ่ม + ด้านล่างเพื่อบันทึกเว็บไซต์ที่คุณใช้บ่อย</p>
+    <button id="emptyAdd" class="btn primary">➕ เพิ่มลิงก์แรก</button>
+  </div>
+</main>
+
+<nav class="bar" aria-label="เมนูหลัก">
+  <div class="bar-inner">
+    <button id="navAll" class="nav" type="button">
+      <span class="em" aria-hidden="true">🏠</span>
+      <span>หน้าหลัก</span>
+    </button>
+    <button id="navFav" class="nav" type="button">
+      <span class="em" aria-hidden="true">⭐</span>
+      <span>โปรด</span>
+    </button>
+    <button id="addBtn" class="nav add" type="button" aria-label="เพิ่มลิงก์">
+      <span class="fab"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+    </button>
+    <button id="navEdit" class="nav" type="button" aria-pressed="false">
+      <span class="em" aria-hidden="true">✏️</span>
+      <span>แก้ไข</span>
+    </button>
+    <button id="menuBtn" class="nav" type="button" aria-haspopup="true">
+      <span class="em" aria-hidden="true">⚙️</span>
+      <span>เมนู</span>
+    </button>
+  </div>
+  <svg class="arc" viewBox="-40 -20 80 30" aria-hidden="true">
+    <defs><linearGradient id="rb" gradientUnits="userSpaceOnUse" x1="-27" y1="0" x2="27" y2="0">
+      <stop offset="0" stop-color="#f0283c"/><stop offset=".25" stop-color="#f2a900"/><stop offset=".5" stop-color="#1e90ff"/><stop offset=".75" stop-color="#ffc800"/><stop offset="1" stop-color="#16b364"/>
+    </linearGradient></defs>
+    <path d="M -27.2 0 A 35 35 0 0 1 27.2 0" fill="none" stroke="url(#rb)" stroke-width="3.4" stroke-linecap="round"/>
+  </svg>
+</nav>
+
+<!-- เมนู -->
+<div id="menu" class="popmenu" hidden>
+  <label class="menu-row"><span>🔀 เรียงลำดับ</span>
+    <select id="sort" class="select" aria-label="เรียงลำดับ">
+      <option value="manual">ตามที่เพิ่ม</option>
+      <option value="name">ชื่อ ก–ฮ / A–Z</option>
+      <option value="recent">เปิดล่าสุด</option>
+      <option value="popular">เปิดบ่อยที่สุด</option>
+    </select>
+  </label>
+  <button data-act="install" id="miInstall"><span class="em">📲</span>ติดตั้งแอป</button>
+  <button data-act="update"><span class="em">🔄</span>ตรวจสอบอัปเดต <small id="ver" class="muted"></small></button>
+  <button data-act="big"><span class="em">🚗</span>โหมดจอใหญ่ / รถยนต์ <b id="bigState">ปิด</b></button>
+  <button data-act="browser" id="miBrowser"><span class="em">🌐</span>เปิดลิงก์ด้วย <small id="brNow" class="muted"></small></button>
+  <button data-act="pin" id="miPin"><span class="em">🔒</span>ตั้ง PIN ล็อกลิงก์</button>
+  <button data-act="pinoff" id="miPinOff" hidden><span class="em">🔓</span>ลบ PIN</button>
+  <button data-act="backup"><span class="em">💾</span>สำรอง / นำเข้าข้อมูล</button>
+  <button data-act="reset" class="danger"><span class="em">♻️</span>คืนค่าเริ่มต้น</button>
+</div>
+
+<!-- ฟอร์มเพิ่ม/แก้ไข -->
+<dialog id="dlg">
+  <form id="form" method="dialog" novalidate>
+    <div class="dlg-head">
+      <h2 id="dlgTitle">➕ เพิ่มลิงก์ใหม่</h2>
+      <button type="button" class="icon-btn" id="closeDlg" aria-label="ปิด">✕</button>
+    </div>
+
+    <div class="preview" aria-hidden="true">
+      <div id="pvIcon" class="ico">🔗</div>
+      <div><b id="pvName">ชื่อเว็บไซต์</b><small id="pvUrl">example.com</small></div>
+    </div>
+
+    <label class="field">
+      <span>🔗 ที่อยู่เว็บไซต์ (URL) <em>*</em></span>
+      <input id="fUrl" type="text" inputmode="url" placeholder="เช่น youtube.com หรือ https://example.com" autocomplete="off" autocapitalize="off" spellcheck="false" required>
+      <small id="urlErr" class="err" hidden>กรุณากรอก URL ให้ถูกต้อง</small>
+      <button type="button" id="pasteBtn" class="btn ghost sm" style="margin-top:8px">📋 วางลิงก์ที่คัดลอกไว้</button>
+    </label>
+
+    <label class="field">
+      <span>🏷️ ชื่อที่แสดง</span>
+      <input id="fName" type="text" maxlength="40" placeholder="ถ้าเว้นว่างจะใช้ชื่อโดเมนให้อัตโนมัติ" autocomplete="off">
+    </label>
+
+    <label class="field">
+      <span>📂 หมวดหมู่</span>
+      <input id="fCat" type="text" maxlength="24" list="catList" placeholder="เช่น บันเทิง, งาน, ข่าว" autocomplete="off">
+      <datalist id="catList"></datalist>
+    </label>
+
+    <label class="field">
+      <span>🌐 เปิดด้วยเบราว์เซอร์</span>
+      <select id="fBrowser" class="select" aria-label="เบราว์เซอร์"></select>
+    </label>
+
+    <div class="field">
+      <span>😀 ไอคอน (อีโมจิ)</span>
+      <div class="emoji-row" id="emojiRow"></div>
+      <input id="fIcon" type="text" maxlength="4" placeholder="หรือพิมพ์อีโมจิเอง · เว้นว่าง = ใช้โลโก้เว็บ" autocomplete="off">
+    </div>
+
+    <label class="chk"><input type="checkbox" id="fFav"> <span>⭐ เพิ่มในรายการโปรด</span></label>
+    <label class="chk"><input type="checkbox" id="fLock"> <span>🔒 ล็อกด้วย PIN</span></label>
+
+    <div class="field">
+      <span>🎨 สีไอคอน</span>
+      <div class="swatches" id="swatches" role="radiogroup" aria-label="สี"></div>
+    </div>
+
+    <div class="dlg-foot">
+      <button type="button" id="delBtn" class="btn danger-ghost" hidden>🗑️ ลบ</button>
+      <span class="spacer"></span>
+      <button type="button" id="cancelBtn" class="btn ghost">ยกเลิก</button>
+      <button type="submit" id="saveBtn" class="btn primary">💾 บันทึก</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ยืนยันการลบ -->
+<dialog id="confirm" class="small">
+  <form method="dialog">
+    <h2 id="cfTitle">ยืนยัน</h2>
+    <p id="cfText" class="muted"></p>
+    <div class="dlg-foot">
+      <span class="spacer"></span>
+      <button value="cancel" class="btn ghost">ยกเลิก</button>
+      <button value="ok" id="cfOk" class="btn danger">ลบ</button>
+    </div>
+  </form>
+</dialog>
+
+
+<dialog id="brDlg">
+  <form id="brForm" novalidate>
+    <div class="dlg-head"><h2>🌐 เปิดลิงก์ด้วยเบราว์เซอร์</h2><button type="button" class="icon-btn" id="brClose" aria-label="ปิด">✕</button></div>
+    <p id="brNote" class="muted"></p>
+    <div id="brList" class="brlist"></div>
+    <label class="field" id="brCustomRow" hidden><span>ชื่อแพ็กเกจ Android</span>
+      <input id="brCustom" type="text" placeholder="เช่น com.android.chrome" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+    <div class="dlg-foot"><button type="button" id="brTest" class="btn ghost">🔎 ทดสอบ</button><span class="spacer"></span>
+      <button type="button" id="brCancel" class="btn ghost">ยกเลิก</button><button type="submit" class="btn primary">💾 บันทึก</button></div>
+  </form>
+</dialog>
+
+<dialog id="pinDlg" class="small">
+  <form id="pinForm" novalidate>
+    <h2 id="pinTitle">🔒 ใส่ PIN</h2>
+    <p id="pinText" class="muted"></p>
+    <input id="pinIn" class="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="PIN 4–6 หลัก" aria-label="PIN">
+    <input id="pinIn2" class="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="ยืนยัน PIN อีกครั้ง" aria-label="ยืนยัน PIN" hidden>
+    <small id="pinErr" class="err" hidden></small>
+    <div class="dlg-foot"><span class="spacer"></span>
+      <button type="button" id="pinCancel" class="btn ghost">ยกเลิก</button>
+      <button type="submit" id="pinOk" class="btn primary">ตกลง</button></div>
+  </form>
+</dialog>
+
+<dialog id="backup">
+  <form method="dialog" id="bkForm">
+    <div class="dlg-head"><h2>💾 สำรอง / นำเข้าข้อมูล</h2><button value="x" class="icon-btn" aria-label="ปิด">✕</button></div>
+    <label class="field"><span>ข้อมูลลิงก์ทั้งหมด (JSON)</span>
+      <textarea id="bkText" spellcheck="false" aria-label="ข้อมูลสำรอง"></textarea>
+      <p class="hint">คัดลอกเก็บไว้เป็นข้อความ หรือวางข้อมูลที่เคยสำรองไว้แล้วกด “นำเข้า” (ลิงก์ที่ซ้ำจะถูกข้าม)</p></label>
+    <div class="row">
+      <button type="button" id="bkCopy" class="btn ghost">📋 คัดลอก</button>
+      <button type="button" id="bkImport" class="btn primary">📥 นำเข้า</button>
+      <label class="btn ghost" for="importFile" style="cursor:pointer">📁 เลือกไฟล์ .json</label>
+      <input id="importFile" type="file" accept="application/json,.json" hidden>
+    </div>
+  </form>
+</dialog>
+
+<div class="notices" aria-live="polite">
+  <div id="updateBar" class="notice" hidden>
+    <span class="nem">🔄</span><span class="txt"><b>มีเวอร์ชันใหม่พร้อมใช้งาน</b><small>อัปเดตเพื่อรับฟีเจอร์ล่าสุด</small></span>
+    <button id="updateBtn" class="btn primary sm">อัปเดตเลย</button>
+    <button id="updateLater" class="mini" aria-label="ปิด">✕</button>
+  </div>
+  <div id="installBar" class="notice" hidden>
+    <span class="nem">📲</span><span class="txt"><b>ติดตั้งแอปไว้บนหน้าจอหลัก</b><small>เปิดได้เร็ว ใช้งานเต็มจอ ไม่ต้องพิมพ์ URL</small></span>
+    <button id="installBtn" class="btn primary sm">ติดตั้ง</button>
+    <button id="installLater" class="mini" aria-label="ปิด">✕</button>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* รองรับเบราว์เซอร์รุ่นเก่า (จอรถ / Android box) */
+(function () {
+  var E = Element.prototype;
+  if (!E.replaceChildren) E.replaceChildren = function () { while (this.firstChild) this.removeChild(this.firstChild); for (var i = 0; i < arguments.length; i++) this.appendChild(typeof arguments[i] === 'string' ? document.createTextNode(arguments[i]) : arguments[i]); };
+  if (!E.toggleAttribute) E.toggleAttribute = function (n, f) { var on = f === undefined ? !this.hasAttribute(n) : !!f; if (on) this.setAttribute(n, ''); else this.removeAttribute(n); return on; };
+  if (!Array.prototype.flat) Array.prototype.flat = function () { return this.reduce(function (a, b) { return a.concat(Array.isArray(b) ? b.flat() : b); }, []); };
+  if (!window.HTMLDialogElement || !HTMLDialogElement.prototype.showModal) {
+    document.documentElement.className += ' nodlg';
+    var D = (window.HTMLDialogElement || HTMLElement).prototype;
+    D.showModal = D.show = function () { this.setAttribute('open', ''); };
+    D.close = function (v) { if (v !== undefined) this.returnValue = v; if (!this.hasAttribute('open')) return; this.removeAttribute('open'); var self = this; setTimeout(function () { self.dispatchEvent(new Event('close')); }, 0); };
+    document.addEventListener('submit', function (e) { var f = e.target; if (f && f.getAttribute && f.getAttribute('method') === 'dialog' && f.id !== 'form') { e.preventDefault(); var d = f.closest('dialog'); var b = e.submitter || document.activeElement; if (d) d.close(b && b.value ? b.value : ''); } }, true);
+  }
+})();
+</script>
+<script>
+'use strict';
+/* HPlay – จัดการลิงก์เว็บไซต์ (เก็บใน localStorage ของเครื่อง) */
+
+const KEY = 'hdc-links-v2';
+const THEME_KEY = 'hdc-theme';
+const COLORS = ['#f0283c', '#e69500', '#1e90ff', '#ffd400', '#16b364'];
+const EMOJIS = ['🎬', '📺', '🍿', '🎵', '📰', '💼', '📚', '🛒', '🎮', '🏦', '✉️', '📷', '☁️', '🌐', '🍔', '✈️', '💊', '🏫', '💬', '⭐'];
+const DEFAULTS = [
+  { id: 'hdc', name: '123HDC', url: 'https://www.123-hdc.com/', cat: 'บันเทิง', icon: '🎬', color: '#f0283c', fav: true, opens: 0, last: 0 }
+];
+
+const $ = (id) => document.getElementById(id);
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch { /* private mode */ } }
+};
+
+/* ---------- State ---------- */
+let links = load();
+let filter = 'all';          // all | fav | <category>
+let query = '';
+let editingId = null;
+let editMode = false;
+let formColor = COLORS[0];
+let formEmoji = '';
+
+function load() {
+  try {
+    const raw = store.get(KEY);
+    if (raw) { const a = JSON.parse(raw); if (Array.isArray(a)) return a.filter(valid).map(clean); }
+  } catch { /* ignore */ }
+  return DEFAULTS.map((x) => ({ ...x }));
+}
+function save() { store.set(KEY, JSON.stringify(links)); }
+function valid(x) { return x && typeof x.url === 'string' && safeUrl(x.url); }
+function clean(x) {
+  return {
+    id: String(x.id || uid()), name: String(x.name || hostOf(x.url)).slice(0, 40), url: safeUrl(x.url).href,
+    cat: String(x.cat || '').slice(0, 24), icon: String(x.icon || '').slice(0, 4),
+    color: COLORS.includes(x.color) ? x.color : COLORS[[...String(x.name || x.url)].reduce((a, c) => a + c.charCodeAt(0), 0) % COLORS.length], fav: !!x.fav, locked: !!x.locked, browser: String(x.browser || '').slice(0, 12), opens: +x.opens || 0, last: +x.last || 0
+  };
+}
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+/* ---------- URL helpers ---------- */
+function safeUrl(input) {
+  let s = String(input || '').trim();
+  if (!s) return null;
+  if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(s)) s = 'https://' + s;
+  try {
+    const u = new URL(s);
+    if (!/^https?:$/.test(u.protocol)) return null;       // กัน javascript: / data:
+    if (!u.hostname.includes('.') && u.hostname !== 'localhost') return null;
+    return u;
+  } catch { return null; }
+}
+function hostOf(url) { const u = safeUrl(url); return u ? u.hostname.replace(/^www\./, '') : ''; }
+function shortUrl(url) { const u = safeUrl(url); return u ? (u.hostname.replace(/^www\./, '') + (u.pathname !== '/' ? u.pathname : '')) : url; }
+
+/* ---------- Theme ---------- */
+/* ---------- Render ---------- */
+function categories() { return [...new Set(links.map((l) => l.cat).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'th')); }
+
+function visible() {
+  const q = query.trim().toLowerCase();
+  let r = links.filter((l) => {
+    if (filter === 'fav' && !l.fav) return false;
+    if (filter !== 'all' && filter !== 'fav' && l.cat !== filter) return false;
+    return !q || (l.name + ' ' + (l.locked ? '' : l.url) + ' ' + l.cat).toLowerCase().includes(q);
+  });
+  const s = $('sort').value;
+  if (s === 'name') r.sort((a, b) => a.name.localeCompare(b.name, 'th'));
+  else if (s === 'recent') r.sort((a, b) => b.last - a.last);
+  else if (s === 'popular') r.sort((a, b) => b.opens - a.opens);
+  return r;
+}
+
+function el(tag, props = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === 'class') n.className = v; else if (k === 'text') n.textContent = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v);
+  }
+  kids.flat().forEach((c) => c && n.append(c));
+  return n;
+}
+
+function iconNode(l) {
+  const box = el('div', { class: 'ico' });
+  if (l.icon) { box.textContent = l.icon; return box; }
+  const letter = (l.name || '?').trim().charAt(0).toUpperCase();
+  box.textContent = letter;
+  return box;
+}
+
+function render() {
+  renderChips();
+  const list = visible();
+  const grid = $('grid');
+  grid.replaceChildren();
+  grid.classList.toggle('editing', editMode);
+  list.forEach((l, i) => {
+    let timer = null, longPressed = false;
+    const locked = l.locked && pinSet();
+    const tile = el('a', {
+      class: 'tile', href: locked ? '#' : launch(l).href, 'data-id': l.id, rel: 'noopener noreferrer',
+      title: locked ? l.name : l.name + ' · ' + shortUrl(l.url), style: `--c:${l.color};animation-delay:${Math.min(i, 20) * 12}ms`,
+      onclick: (e) => {
+        if (longPressed) { e.preventDefault(); longPressed = false; return; }
+        if (justDragged) { e.preventDefault(); return; }
+        if (editMode) { e.preventDefault(); editLink(l.id); return; }
+        if (locked) { e.preventDefault(); gateOpen(l); return; }
+        track(l.id); watchLaunch(l);
+      },
+      oncontextmenu: (e) => { e.preventDefault(); if (!editMode) editLink(l.id); },
+      onpointerdown: (e) => {
+        if (editMode) { dragDown(e, l, tile); return; }
+        if (e.pointerType !== 'touch') return;
+        timer = setTimeout(() => { longPressed = true; editLink(l.id); }, 550);
+      },
+      onpointerup: () => clearTimeout(timer), onpointermove: () => clearTimeout(timer), onpointercancel: () => clearTimeout(timer),
+      ondragstart: (e) => e.preventDefault()
+    }, iconNode(l), el('span', { class: 'tname', text: l.name }));
+    if (!locked) applyLaunch(tile, l);
+    if (l.fav) tile.append(el('span', { class: 'star', 'aria-label': 'รายการโปรด', text: '★' }));
+    if (locked) tile.append(el('span', { class: 'lock', 'aria-label': 'ล็อกด้วย PIN', text: '🔒' }));
+    grid.append(tile);
+  });
+
+  renderRecent(); updatePinMenu(); updateBrMenu();
+  const total = links.length;
+  const label = filter === 'all' ? '🏠 ทั้งหมด' : filter === 'fav' ? '⭐ รายการโปรด' : '📂 ' + filter;
+  $('summary').textContent = total ? `${label} · ${list.length} ลิงก์` : 'ยังไม่มีลิงก์';
+  $('editNote').hidden = !editMode;
+  $('navAll').toggleAttribute('aria-current', filter !== 'fav');
+  if (filter !== 'fav') $('navAll').setAttribute('aria-current', 'page');
+  if (filter === 'fav') $('navFav').setAttribute('aria-current', 'page'); else $('navFav').removeAttribute('aria-current');
+  $('navEdit').setAttribute('aria-pressed', String(editMode));
+  const empty = !list.length;
+  $('empty').hidden = !empty;
+  grid.hidden = empty;
+  if (empty) {
+    const none = !total;
+    $('emptyTitle').textContent = none ? 'ยังไม่มีลิงก์' : filter === 'fav' && !query ? 'ยังไม่มีรายการโปรด' : 'ไม่พบรายการที่ตรงกัน';
+    $('emptyText').textContent = none ? 'กดปุ่ม + ด้านล่างเพื่อบันทึกเว็บไซต์ที่คุณใช้บ่อย' : filter === 'fav' && !query ? 'เปิดโหมดแก้ไข แล้วแตะไอคอนเพื่อติ๊กรายการโปรด' : 'ลองเปลี่ยนคำค้นหา หรือเลือกหมวดหมู่อื่น';
+    $('emptyAdd').hidden = !none;
+  }
+}
+
+function renderChips() {
+  const box = $('chips');
+  const cats = categories();
+  if (filter !== 'all' && filter !== 'fav' && !cats.includes(filter)) filter = 'all';
+  const items = [['all', '🌈 ทั้งหมด', links.length],
+    ...cats.map((c) => [c, c, links.filter((l) => l.cat === c).length])];
+  box.replaceChildren(...items.map(([k, label, n]) =>
+    el('button', { class: 'chip', role: 'tab', 'aria-selected': String(filter === k), onclick: () => { filter = k; render(); } }, label, el('span', { class: 'n', text: n }))));
+}
+
+/* ---------- Actions ---------- */
+function track(id) { const l = links.find((x) => x.id === id); if (l) { l.opens++; l.last = Date.now(); save(); } }
+function toggleFav(id) { const l = links.find((x) => x.id === id); if (l) { l.fav = !l.fav; save(); render(); } }
+
+let toastTimer;
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ---------- Form ---------- */
+const dlg = $('dlg');
+
+function buildPickers() {
+  $('emojiRow').replaceChildren(...EMOJIS.map((e) =>
+    el('button', { type: 'button', 'aria-pressed': 'false', onclick: () => { formEmoji = formEmoji === e ? '' : e; $('fIcon').value = formEmoji; syncPickers(); } }, e)));
+  $('swatches').replaceChildren(...COLORS.map((c) =>
+    el('button', { type: 'button', class: 'swatch', role: 'radio', 'aria-label': c, 'aria-checked': 'false', style: `--c:${c}`, onclick: () => { formColor = c; syncPickers(); } })));
+}
+function syncPickers() {
+  [...$('emojiRow').children].forEach((b) => b.setAttribute('aria-pressed', String(b.textContent === formEmoji)));
+  [...$('swatches').children].forEach((b, i) => b.setAttribute('aria-checked', String(COLORS[i] === formColor)));
+  updatePreview();
+}
+function updatePreview() {
+  const u = safeUrl($('fUrl').value);
+  const name = $('fName').value.trim() || (u ? hostOf(u.href) : '') || 'ชื่อเว็บไซต์';
+  const pv = $('pvIcon');
+  pv.parentElement.style.setProperty('--c', formColor);
+  pv.style.setProperty('--c', formColor);
+  pv.textContent = formEmoji || name.charAt(0).toUpperCase() || '🔗';
+  $('pvName').textContent = name;
+  $('pvUrl').textContent = u ? shortUrl(u.href) : 'example.com';
+}
+
+function openForm(id = null) {
+  if (dlg.open) return;
+  editingId = id;
+  const l = id ? links.find((x) => x.id === id) : null;
+  $('dlgTitle').textContent = l ? '✏️ แก้ไขลิงก์' : '➕ เพิ่มลิงก์ใหม่';
+  $('delBtn').hidden = !l;
+  $('fUrl').value = l ? l.url : '';
+  $('fName').value = l ? l.name : '';
+  $('fCat').value = l ? l.cat : (filter !== 'all' && filter !== 'fav' ? filter : '');
+  $('fFav').checked = l ? l.fav : filter === 'fav';
+  $('fLock').checked = l ? !!l.locked : false;
+  $('fBrowser').value = l ? (l.browser || '') : '';
+  formEmoji = l ? l.icon : '';
+  $('fIcon').value = formEmoji;
+  formColor = l ? l.color : COLORS[links.length % COLORS.length];
+  $('fUrl').classList.remove('bad'); $('urlErr').hidden = true;
+  $('catList').replaceChildren(...categories().map((c) => el('option', { value: c })));
+  syncPickers();
+  closeMenu();
+  dlg.showModal();
+  if (!l) setTimeout(() => $('fUrl').focus(), 50);
+}
+
+$('fUrl').addEventListener('input', () => { $('fUrl').classList.remove('bad'); $('urlErr').hidden = true; updatePreview(); });
+$('fName').addEventListener('input', updatePreview);
+$('fIcon').addEventListener('input', () => { formEmoji = [...$('fIcon').value].slice(0, 2).join(''); syncPickers(); });
+
+$('form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const u = safeUrl($('fUrl').value);
+  if (!u) { $('fUrl').classList.add('bad'); $('urlErr').hidden = false; $('fUrl').focus(); return; }
+  const item = {
+    name: $('fName').value.trim() || hostOf(u.href), url: u.href, cat: $('fCat').value.trim(),
+    icon: formEmoji, color: formColor, fav: $('fFav').checked, locked: $('fLock').checked, browser: $('fBrowser').value
+  };
+  if (editingId) {
+    Object.assign(links.find((x) => x.id === editingId), item);
+    toast('บันทึกการแก้ไขแล้ว');
+  } else {
+    links.push({ id: uid(), opens: 0, last: 0, ...item });
+    toast('เพิ่มลิงก์แล้ว');
+  }
+  save(); dlg.close(); render();
+});
+
+$('closeDlg').onclick = $('cancelBtn').onclick = () => dlg.close();
+dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+
+$('delBtn').onclick = async () => {
+  const l = links.find((x) => x.id === editingId);
+  if (l && await ask('ลบลิงก์นี้?', `“${l.name}” จะถูกลบออกจากรายการ`, 'ลบ')) {
+    links = links.filter((x) => x.id !== editingId); save(); dlg.close(); render(); toast('ลบแล้ว');
+  }
+};
+
+/* ---------- Confirm ---------- */
+function ask(title, text, okLabel) {
+  const d = $('confirm');
+  $('cfTitle').textContent = title; $('cfText').textContent = text; $('cfOk').textContent = okLabel || 'ตกลง';
+  return new Promise((res) => {
+    d.addEventListener('close', () => res(d.returnValue === 'ok'), { once: true });
+    d.returnValue = 'cancel'; d.showModal();
+  });
+}
+
+/* ---------- Menu: export / import / reset ---------- */
+const menu = $('menu');
+function closeMenu() { menu.hidden = true; }
+$('menuBtn').onclick = (e) => { e.stopPropagation(); menu.hidden = !menu.hidden; };
+document.addEventListener('click', (e) => { if (!menu.contains(e.target)) closeMenu(); });
+
+const bk = $('backup');
+const exportText = () => JSON.stringify({ app: '123hdc-link-hub', links }, null, 2);
+function importFrom(text) {
+  try {
+    const data = JSON.parse(text);
+    const arr = Array.isArray(data) ? data : data.links;
+    const incoming = arr.filter(valid).map(clean);
+    if (!incoming.length) throw new Error('empty');
+    const have = new Set(links.map((l) => l.url));
+    const fresh = incoming.filter((l) => !have.has(l.url)).map((l) => ({ ...l, id: uid() }));
+    links.push(...fresh); save(); render();
+    toast(`นำเข้า ${fresh.length} ลิงก์` + (incoming.length - fresh.length ? ` (ข้ามที่ซ้ำ ${incoming.length - fresh.length})` : ''));
+    bk.close();
+  } catch { toast('ข้อมูลไม่ถูกต้อง ตรวจสอบแล้วลองอีกครั้ง'); }
+}
+menu.addEventListener('click', async (e) => {
+  const act = e.target.dataset.act; if (!act) return; closeMenu();
+  if (act === 'backup') { $('bkText').value = exportText(); bk.showModal(); }
+  else if (act === 'reset' && await ask('คืนค่าเริ่มต้น?', 'ลิงก์ทั้งหมดที่เพิ่มไว้จะถูกลบ', 'คืนค่า')) {
+    links = DEFAULTS.map((x) => ({ ...x })); try { localStorage.removeItem('hdc-pin'); } catch (er) { /* ignore */ } save(); render(); toast('คืนค่าเริ่มต้นแล้ว');
+  }
+});
+$('bkCopy').onclick = async () => {
+  const t = $('bkText'); t.value = exportText();
+  try { await navigator.clipboard.writeText(t.value); toast('คัดลอกแล้ว'); } catch { t.focus(); t.select(); toast('กด Ctrl/⌘+C เพื่อคัดลอก'); }
+};
+$('bkImport').onclick = () => importFrom($('bkText').value);
+$('importFile').addEventListener('change', async (e) => { const f = e.target.files[0]; e.target.value = ''; if (f) importFrom(await f.text()); });
+bk.addEventListener('click', (e) => { if (e.target === bk) bk.close(); });
+
+/* ---------- Search / sort / shortcuts ---------- */
+$('search').addEventListener('input', (e) => { query = e.target.value; render(); });
+$('sort').addEventListener('change', () => { render(); closeMenu(); });
+$('navAll').onclick = () => { filter = 'all'; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+$('navFav').onclick = () => { filter = filter === 'fav' ? 'all' : 'fav'; render(); };
+$('navEdit').onclick = () => { editMode = !editMode; render(); toast(editMode ? 'โหมดแก้ไข: แตะไอคอนเพื่อแก้ไข' : 'ออกจากโหมดแก้ไข'); };
+$('addBtn').onclick = $('emptyAdd').onclick = () => openForm();
+document.addEventListener('keydown', (e) => {
+  const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+  if (e.key === '/' && !typing && !dlg.open) { e.preventDefault(); $('search').focus(); }
+  if (e.key === 'Escape') closeMenu();
+});
+
+
+
+/* ===== v8: เลือกเบราว์เซอร์ที่ใช้เปิดลิงก์ ===== */
+const IS_ANDROID = /android/i.test(navigator.userAgent);
+const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const BR_KEY = 'hdc-browser';
+const BROWSERS = [
+  { id: 'chrome', name: 'Chrome', em: '🟢', and: 'com.android.chrome', ios: (u) => u.replace(/^http/, 'googlechrome') },
+  { id: 'firefox', name: 'Firefox', em: '🦊', and: 'org.mozilla.firefox', ios: (u) => 'firefox://open-url?url=' + encodeURIComponent(u) },
+  { id: 'edge', name: 'Edge', em: '🌊', and: 'com.microsoft.emmx', ios: (u) => 'microsoft-edge-' + u },
+  { id: 'samsung', name: 'Samsung Internet', em: '🪐', and: 'com.sec.android.app.sbrowser', ios: null },
+  { id: 'opera', name: 'Opera', em: '🅾️', and: 'com.opera.browser', ios: (u) => 'touch-' + u },
+  { id: 'brave', name: 'Brave', em: '🦁', and: 'com.brave.browser', ios: (u) => 'brave://open-url?url=' + encodeURIComponent(u) },
+  { id: 'ddg', name: 'DuckDuckGo', em: '🦆', and: 'com.duckduckgo.mobile.android', ios: (u) => 'ddgQuickLink://' + u },
+  { id: 'via', name: 'Via', em: '⚡', and: 'mark.via.gp', ios: null },
+  { id: 'kiwi', name: 'Kiwi', em: '🥝', and: 'com.kiwibrowser.browser', ios: null },
+  { id: 'uc', name: 'UC Browser', em: '🐿️', and: 'com.UCMobile.intl', ios: null }
+];
+let brSettings = (() => { try { const o = JSON.parse(localStorage.getItem(BR_KEY) || 'null'); if (o && typeof o.id === 'string') return { id: o.id, custom: String(o.custom || '') }; } catch (e) { /* ignore */ } return { id: 'system', custom: '' }; })();
+const PKG_RE = /^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$/;
+function brName(id, custom) {
+  if (id === 'system') return 'เบราว์เซอร์ปกติ';
+  if (id === 'custom') return custom || 'กำหนดเอง';
+  const b = BROWSERS.find((x) => x.id === id); return b ? b.name : 'เบราว์เซอร์ปกติ';
+}
+function browserHref(url, id, custom) {
+  if (!id || id === 'system') return null;
+  let u; try { u = new URL(url); } catch (e) { return null; }
+  if (IS_ANDROID) {
+    const pkg = id === 'custom' ? custom : (BROWSERS.find((x) => x.id === id) || {}).and;
+    if (!pkg || !PKG_RE.test(pkg)) return null;
+    return 'intent://' + u.host + u.pathname + u.search + '#Intent;scheme=' + u.protocol.slice(0, -1) + ';package=' + pkg + ';S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+  }
+  if (IS_IOS) { const b = BROWSERS.find((x) => x.id === id); return b && b.ios ? b.ios(url) : null; }
+  return null;
+}
+
+/* --- ตรวจว่าเปิดเบราว์เซอร์อื่นสำเร็จไหม ถ้าไม่ มีทางเลือกสำรอง --- */
+const IN_FRAME = (() => { try { return window.top !== window.self; } catch (e) { return true; } })();
+function launch(l) {
+  const id = l.browser || brSettings.id || 'system';
+  const h = browserHref(l.url, id, brSettings.custom);
+  return h ? { href: h, blank: IN_FRAME, ext: true, id } : { href: l.url, blank: true, ext: false, id };
+}
+function watchLaunch(l) {
+  const lk = launch(l); if (!lk.ext) return;
+  let leftAt = 0;
+  const onVis = () => {
+    if (document.hidden) { if (!leftAt) leftAt = Date.now(); return; }
+    document.removeEventListener('visibilitychange', onVis);
+    if (leftAt && Date.now() - leftAt < 10000) launchFailBar(l, lk.id);   // กลับมาเร็ว = น่าจะเปิดไม่สำเร็จ
+  };
+  document.addEventListener('visibilitychange', onVis);
+  setTimeout(() => { if (!leftAt && !document.hidden) { document.removeEventListener('visibilitychange', onVis); launchFailBar(l, lk.id); } }, 1800);   // ไม่มีอะไรเกิดขึ้นเลย
+  setTimeout(() => document.removeEventListener('visibilitychange', onVis), 60000);
+}
+function launchFailBar(l, id) {
+  let box = document.querySelector('.notices');
+  if (!box) { box = el('div', { class: 'notices' }); document.body.append(box); }
+  const old = $('failBar'); if (old) old.remove();
+  const bar = el('div', { class: 'notice', id: 'failBar' },
+    el('span', { class: 'nem', text: '⚠️' }),
+    el('span', { class: 'txt' }, el('b', { text: 'เปิดด้วย ' + brName(id, brSettings.custom) + ' ไม่สำเร็จหรือเปล่า?' }),
+      el('small', { text: 'ถ้าเบราว์เซอร์ไม่เปิด ลองเปิดจากแอปที่ติดตั้ง หรือเลือกด้านล่าง' })),
+    el('button', { class: 'btn primary sm', onclick: () => { bar.remove(); const a = el('a', { href: l.url, target: '_blank', rel: 'noopener noreferrer' }); document.body.append(a); a.click(); a.remove(); } }, 'เปิดปกติ'),
+    el('button', { class: 'btn ghost sm', onclick: async () => { try { await navigator.clipboard.writeText(l.url); toast('📋 คัดลอกลิงก์แล้ว วางในเบราว์เซอร์ที่ต้องการ'); } catch (e) { toast(l.url); } } }, 'คัดลอก'),
+    el('button', { class: 'mini', 'aria-label': 'ปิด', onclick: () => bar.remove() }, '✕'));
+  box.append(bar);
+  setTimeout(() => { if (bar.parentNode) bar.remove(); }, 15000);
+}
+function applyLaunch(a, l) { if (launch(l).blank) a.setAttribute('target', '_blank'); else a.removeAttribute('target'); }
+
+/* --- หน้าตั้งค่า --- */
+const brDlg = $('brDlg');
+let brPick = 'system';
+function brRows() {
+  const rows = [{ id: 'system', name: 'เบราว์เซอร์ปกติ (แท็บใหม่)', em: '🧭' }].concat(BROWSERS.filter((b) => IS_ANDROID || b.ios).map((b) => ({ id: b.id, name: b.name, em: b.em })));
+  if (IS_ANDROID) rows.push({ id: 'custom', name: 'กำหนดเอง (ชื่อแพ็กเกจ)', em: '🛠️' });
+  return rows;
+}
+function renderBrList() {
+  const canExt = IS_ANDROID || IS_IOS;
+  $('brList').replaceChildren(...brRows().map((r) => {
+    const inp = el('input', { type: 'radio', name: 'br', value: r.id });
+    inp.checked = brPick === r.id; inp.disabled = !canExt && r.id !== 'system';
+    inp.addEventListener('change', () => { brPick = r.id; renderBrList(); });
+    return el('label', { class: 'opt' + (brPick === r.id ? ' on' : '') }, inp, el('span', { text: r.em + ' ' + r.name }));
+  }));
+  $('brCustomRow').hidden = brPick !== 'custom';
+}
+function openBrDlg() {
+  brPick = brSettings.id; $('brCustom').value = brSettings.custom;
+  $('brNote').textContent = IS_ANDROID ? 'เลือกเบราว์เซอร์ที่ติดตั้งในเครื่อง ใช้ได้เมื่อเปิดแอปจากหน้าเว็บที่ติดตั้งหรือจาก Chrome โดยตรง ถ้าเปิดผ่านแอปอื่น (เช่น เบราว์เซอร์ในแอปแชท) อาจไม่สลับให้'
+    : IS_IOS ? 'เลือกเบราว์เซอร์ที่ติดตั้งในเครื่อง บาง ระบบ iOS อาจถามยืนยันก่อนสลับแอป'
+    : 'ตัวเลือกนี้ใช้ได้บน Android และ iPhone/iPad เท่านั้น บนคอมพิวเตอร์ลิงก์จะเปิดในแท็บใหม่ตามปกติ';
+  renderBrList(); brDlg.showModal();
+}
+$('brClose').onclick = $('brCancel').onclick = () => brDlg.close();
+brDlg.addEventListener('click', (e) => { if (e.target === brDlg) brDlg.close(); });
+$('brTest').onclick = () => {
+  const custom = $('brCustom').value.trim();
+  if (brPick === 'custom' && !PKG_RE.test(custom)) { toast('ชื่อแพ็กเกจไม่ถูกต้อง เช่น com.android.chrome'); return; }
+  const h = browserHref('https://example.com/', brPick, custom);
+  const a = el('a', { href: h || 'https://example.com/', rel: 'noopener noreferrer' });
+  if (!h) a.setAttribute('target', '_blank');
+  document.body.append(a); a.click(); a.remove();
+};
+$('brForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const custom = $('brCustom').value.trim();
+  if (brPick === 'custom' && !PKG_RE.test(custom)) { toast('ชื่อแพ็กเกจไม่ถูกต้อง เช่น com.android.chrome'); $('brCustom').focus(); return; }
+  brSettings = { id: brPick, custom: brPick === 'custom' ? custom : '' };
+  store.set(BR_KEY, JSON.stringify(brSettings));
+  brDlg.close(); render(); toast('✅ ตั้งค่าเบราว์เซอร์แล้ว: ' + brName(brSettings.id, brSettings.custom));
+});
+function buildBrSelect() {
+  const s = $('fBrowser');
+  s.replaceChildren(el('option', { value: '', text: 'ใช้ค่าหลัก' }), el('option', { value: 'system', text: 'เบราว์เซอร์ปกติ (แท็บใหม่)' }),
+    ...BROWSERS.filter((b) => IS_ANDROID || b.ios).map((b) => el('option', { value: b.id, text: b.name })));
+}
+function updateBrMenu() { $('brNow').textContent = '· ' + brName(brSettings.id, brSettings.custom); }
+$('menu').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b && b.dataset.act === 'browser') openBrDlg(); });
+buildBrSelect();
+/* ===== v7 features ===== */
+let justDragged = false;
+
+/* --- PIN --- */
+const PIN_KEY = 'hdc-pin';
+let pinFails = 0, pinLockUntil = 0, unlockedUntil = 0;
+function pinData() { try { return JSON.parse(localStorage.getItem(PIN_KEY) || 'null'); } catch (e) { return null; } }
+function pinSet() { return !!pinData(); }
+async function hashPin(pin, salt) {
+  const s = salt + ':' + pin;
+  try {
+    if (window.crypto && crypto.subtle) {
+      const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+      return Array.from(new Uint8Array(b)).map((x) => x.toString(16).padStart(2, '0')).join('');
+    }
+  } catch (e) { /* fall through */ }
+  let h = 5381; for (let r = 0; r < 2000; r++) for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+  return 'f' + h.toString(16);
+}
+function pinDialog(opt) {
+  return new Promise((resolve) => {
+    const d = $('pinDlg'), f = $('pinForm'), i1 = $('pinIn'), i2 = $('pinIn2'), err = $('pinErr');
+    $('pinTitle').textContent = opt.title; $('pinText').textContent = opt.text || '';
+    i1.value = ''; i2.value = ''; i2.hidden = !opt.confirm; err.hidden = true;
+    let done = false;
+    const show = (m) => { err.textContent = m; err.hidden = false; };
+    const finish = (v) => { if (done) return; done = true; f.onsubmit = null; $('pinCancel').onclick = null; if (d.open) d.close(); resolve(v); };
+    f.onsubmit = async (e) => {
+      e.preventDefault();
+      const p = i1.value.trim();
+      if (!/^\d{4,6}$/.test(p)) { show('PIN ต้องเป็นตัวเลข 4–6 หลัก'); return; }
+      if (opt.confirm && p !== i2.value.trim()) { show('PIN สองช่องไม่ตรงกัน'); return; }
+      if (opt.verify) { const r = await opt.verify(p); if (r !== true) { show(r || 'PIN ไม่ถูกต้อง'); i1.value = ''; i1.focus(); return; } }
+      finish(p);
+    };
+    $('pinCancel').onclick = () => finish(null);
+    d.addEventListener('cancel', () => finish(null), { once: true });
+    d.addEventListener('close', () => finish(null), { once: true });
+    d.showModal(); setTimeout(() => i1.focus(), 50);
+  });
+}
+async function verifyPin(p) {
+  if (Date.now() < pinLockUntil) return 'ลองผิดหลายครั้ง รออีก ' + Math.ceil((pinLockUntil - Date.now()) / 1000) + ' วินาที';
+  const d = pinData(); if (!d) return true;
+  if ((await hashPin(p, d.salt)) === d.hash) { pinFails = 0; return true; }
+  if (++pinFails >= 5) { pinFails = 0; pinLockUntil = Date.now() + 30000; return 'ผิด 5 ครั้ง กรุณารอ 30 วินาที'; }
+  return 'PIN ไม่ถูกต้อง (' + pinFails + '/5)';
+}
+async function ensureUnlocked(text) {
+  if (!pinSet() || Date.now() < unlockedUntil) return true;
+  const p = await pinDialog({ title: '🔒 ใส่ PIN', text: text || 'ลิงก์นี้ถูกล็อกไว้', verify: verifyPin });
+  if (p) { unlockedUntil = Date.now() + 120000; return true; }
+  return false;
+}
+async function createPin() {
+  const p = await pinDialog({ title: '🔒 ตั้ง PIN ใหม่', text: 'ใช้กันไม่ให้คนอื่นแตะเปิดลิงก์ที่ล็อกบนเครื่องนี้ (ไม่ใช่การเข้ารหัสข้อมูล)', confirm: true });
+  if (!p) return false;
+  const salt = uid();
+  store.set(PIN_KEY, JSON.stringify({ salt, hash: await hashPin(p, salt) }));
+  unlockedUntil = Date.now() + 120000; render(); return true;
+}
+function updatePinMenu() {
+  $('miPin').lastChild.textContent = pinSet() ? 'เปลี่ยน PIN' : 'ตั้ง PIN ล็อกลิงก์';
+  $('miPinOff').hidden = !pinSet();
+}
+function openUrl(l) { const a = el('a', { href: launch(l).href, rel: 'noopener noreferrer' }); applyLaunch(a, l); document.body.append(a); a.click(); a.remove(); }
+function gateOpen(l) { ensureUnlocked('ใส่ PIN เพื่อเปิด “' + l.name + '”').then((ok) => { if (ok) { track(l.id); openUrl(l); watchLaunch(l); } }); }
+async function editLink(id) { const l = links.find((x) => x.id === id); if (!l || (l.locked && !(await ensureUnlocked('ใส่ PIN เพื่อแก้ไข “' + l.name + '”')))) return; openForm(id); }
+$('fLock').addEventListener('change', async () => { if ($('fLock').checked && !pinSet() && !(await createPin())) $('fLock').checked = false; });
+$('menu').addEventListener('click', async (e) => {
+  const b = e.target.closest('button'); const act = b ? b.dataset.act : null;
+  if (act === 'pin') {
+    if (!pinSet()) { if (await createPin()) toast('✅ ตั้ง PIN แล้ว'); return; }
+    unlockedUntil = 0;
+    if (await ensureUnlocked('ใส่ PIN ปัจจุบันก่อนเปลี่ยน') && await createPin()) toast('✅ เปลี่ยน PIN แล้ว');
+  } else if (act === 'pinoff') {
+    unlockedUntil = 0;
+    if (await ensureUnlocked('ใส่ PIN เพื่อลบการล็อกทั้งหมด') && await ask('ลบ PIN?', 'ลิงก์ที่ล็อกไว้ทั้งหมดจะถูกปลดล็อก', 'ลบ PIN')) {
+      try { localStorage.removeItem(PIN_KEY); } catch (er) { /* ignore */ }
+      links.forEach((l) => { l.locked = false; }); save(); render(); toast('🔓 ลบ PIN แล้ว');
+    }
+  }
+});
+
+/* --- ใช้ล่าสุด --- */
+function renderRecent() {
+  const show = filter === 'all' && !query.trim() && !editMode && links.length >= 4;
+  const items = show ? links.filter((l) => l.last > 0 && !l.locked).sort((a, b) => b.last - a.last).slice(0, 6) : [];
+  $('recent').hidden = !items.length;
+  $('recentList').replaceChildren(...items.map((l) =>
+    el('a', { class: 'rchip', href: launch(l).href, rel: 'noopener noreferrer', style: '--c:' + l.color, title: l.name, onclick: () => { track(l.id); watchLaunch(l); } },
+      el('span', { class: 'rico', text: l.icon || l.name.charAt(0).toUpperCase() }), el('span', { class: 'rname', text: l.name }))));
+  [...$('recentList').children].forEach((a, i) => applyLaunch(a, items[i]));
+}
+$('recentClear').onclick = () => { links.forEach((l) => { l.last = 0; }); save(); render(); toast('ล้างประวัติแล้ว'); };
+
+/* --- ลากเรียงลำดับ (โหมดแก้ไข) --- */
+let drag = null;
+function dragDown(e, l, tile) {
+  if (!editMode || (e.button || 0) > 0) return;
+  drag = { id: l.id, tile, x: e.clientX, y: e.clientY, on: false, over: null, pt: e.pointerType, timer: null };
+  if (e.pointerType === 'touch') drag.timer = setTimeout(dragOn, 260);
+}
+function dragOn() {
+  if (!drag || drag.on) return;
+  drag.on = true; drag.tile.classList.add('dragging');
+  try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) { /* ignore */ }
+}
+document.addEventListener('pointermove', (e) => {
+  if (!drag) return;
+  if (!drag.on) {
+    const d = Math.hypot(e.clientX - drag.x, e.clientY - drag.y);
+    if (drag.pt === 'touch') { if (d > 8) { clearTimeout(drag.timer); drag = null; } return; }
+    if (d > 6) dragOn(); else return;
+  }
+  drag.tile.style.transform = 'translate(' + (e.clientX - drag.x) + 'px,' + (e.clientY - drag.y) + 'px) scale(1.06)';
+  document.querySelectorAll('.tile.dropto').forEach((x) => x.classList.remove('dropto'));
+  const t = document.elementFromPoint(e.clientX, e.clientY);
+  const tile = t && t.closest ? t.closest('.tile') : null;
+  drag.over = null;
+  if (tile && tile !== drag.tile && tile.dataset.id) { tile.classList.add('dropto'); drag.over = tile.dataset.id; }
+});
+function dragEnd(cancel) {
+  if (!drag) return;
+  clearTimeout(drag.timer);
+  const d = drag; drag = null;
+  if (!d.on) return;
+  justDragged = true; setTimeout(() => { justDragged = false; }, 120);
+  if (!cancel && d.over) moveLink(d.id, d.over); else render();
+}
+document.addEventListener('pointerup', () => dragEnd(false));
+document.addEventListener('pointercancel', () => dragEnd(true));
+document.addEventListener('touchmove', (e) => { if (drag && drag.on) e.preventDefault(); }, { passive: false });
+function moveLink(id, overId) {
+  const a = links.findIndex((x) => x.id === id), b = links.findIndex((x) => x.id === overId);
+  if (a < 0 || b < 0 || a === b) { render(); return; }
+  const x = links.splice(a, 1)[0]; links.splice(b, 0, x);
+  $('sort').value = 'manual'; save(); render(); toast('↕️ จัดลำดับแล้ว');
+}
+
+/* --- ลิงก์จากคลิปบอร์ด --- */
+function clipBar(u) {
+  let box = document.querySelector('.notices');
+  if (!box) { box = el('div', { class: 'notices' }); document.body.append(box); }
+  const old = $('clipBar'); if (old) old.remove();
+  const close = () => { try { localStorage.setItem('hdc-clip-last', u.href); } catch (e) { /* ignore */ } bar.remove(); };
+  const bar = el('div', { class: 'notice', id: 'clipBar' },
+    el('span', { class: 'nem', text: '📋' }),
+    el('span', { class: 'txt' }, el('b', { text: 'พบลิงก์ในคลิปบอร์ด' }), el('small', { text: shortUrl(u.href) })),
+    el('button', { class: 'btn primary sm', onclick: () => { close(); openForm(); $('fUrl').value = u.href; updatePreview(); } }, 'เพิ่ม'),
+    el('button', { class: 'mini', 'aria-label': 'ปิด', onclick: close }, '✕'));
+  box.append(bar);
+}
+function offerClipboard(text) {
+  const u = safeUrl((text || '').trim());
+  if (!u || links.some((l) => l.url === u.href) || dlg.open) return;
+  try { if (localStorage.getItem('hdc-clip-last') === u.href) return; } catch (e) { /* ignore */ }
+  clipBar(u);
+}
+async function readClip() {
+  try {
+    if (!navigator.clipboard || !navigator.clipboard.readText || !navigator.permissions) return;
+    const p = await navigator.permissions.query({ name: 'clipboard-read' });
+    if (p.state !== 'granted') return;
+    offerClipboard(await navigator.clipboard.readText());
+  } catch (e) { /* not supported / not allowed */ }
+}
+$('pasteBtn').onclick = async () => {
+  try {
+    const t = await navigator.clipboard.readText(); const u = safeUrl((t || '').trim());
+    if (u) { $('fUrl').value = u.href; $('fUrl').classList.remove('bad'); $('urlErr').hidden = true; updatePreview(); toast('📋 วางลิงก์แล้ว'); }
+    else toast('ในคลิปบอร์ดไม่มีลิงก์เว็บไซต์');
+  } catch (e) { $('fUrl').focus(); toast('วางอัตโนมัติไม่ได้ กดค้างที่ช่อง URL แล้วเลือก “วาง”'); }
+};
+document.addEventListener('paste', (e) => {
+  if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) || dlg.open) return;
+  const u = safeUrl(((e.clipboardData && e.clipboardData.getData('text')) || '').trim());
+  if (u) { e.preventDefault(); openForm(); $('fUrl').value = u.href; updatePreview(); }
+});
+document.addEventListener('visibilitychange', () => { if (!document.hidden) readClip(); });
+setTimeout(readClip, 800);
+
+buildPickers();
+render();
+
+</script>
+<script>
+/* ===== PWA: ติดตั้งแอป + อัปเดตแอป ===== */
+(() => {
+  const VERSION = '12';
+  const $ = (id) => document.getElementById(id);
+  const get = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+  const set = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const DAY = 864e5;
+  let deferred = null, reg = null, waiting = null;
+  $('ver').textContent = 'v' + VERSION;
+
+  /* --- ติดตั้ง --- */
+  const snoozed = () => Date.now() - (+get('hdc-install-snooze') || 0) < 3 * DAY;
+  const showInstall = () => { if (!standalone && !snoozed()) $('installBar').hidden = false; };
+  if (standalone) $('miInstall').hidden = true;
+  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e; showInstall(); });
+  if (isIOS && !standalone) setTimeout(showInstall, 1500);
+  window.addEventListener('appinstalled', () => { deferred = null; $('installBar').hidden = true; $('miInstall').hidden = true; toast('✅ ติดตั้งแอปแล้ว'); });
+  async function install() {
+    if (deferred) {
+      deferred.prompt();
+      const { outcome } = await deferred.userChoice;
+      deferred = null; $('installBar').hidden = true;
+      if (outcome !== 'accepted') set('hdc-install-snooze', Date.now());
+    } else {
+      await ask('📲 วิธีติดตั้งแอป', isIOS
+        ? 'แตะปุ่มแชร์ (⬆️) ใน Safari แล้วเลือก “เพิ่มลงหน้าจอหลัก”'
+        : 'เปิดเมนูของเบราว์เซอร์ (⋮) แล้วเลือก “ติดตั้งแอป” หรือ “เพิ่มลงหน้าจอหลัก”', 'เข้าใจแล้ว');
+    }
+  }
+  $('installBtn').onclick = install;
+  $('installLater').onclick = () => { $('installBar').hidden = true; set('hdc-install-snooze', Date.now()); };
+
+  /* --- อัปเดต --- */
+  const offer = (w) => { waiting = w; $('updateBar').hidden = false; };
+  async function checkUpdate(manual) {
+    if (!reg) { if (manual) toast('เบราว์เซอร์นี้ไม่รองรับการอัปเดตอัตโนมัติ'); return; }
+    if (manual) toast('🔎 กำลังตรวจสอบ…');
+    try { await reg.update(); } catch { if (manual) toast('ตรวจสอบไม่สำเร็จ ลองเชื่อมต่ออินเทอร์เน็ตอีกครั้ง'); return; }
+    await new Promise((r) => setTimeout(r, 1200));
+    if (reg.waiting) offer(reg.waiting);
+    else if (manual) toast('✅ เป็นเวอร์ชันล่าสุดแล้ว');
+  }
+  $('updateBtn').onclick = () => { if (waiting) { toast('กำลังอัปเดต…'); waiting.postMessage('SKIP_WAITING'); } else location.reload(); };
+  $('updateLater').onclick = () => { $('updateBar').hidden = true; };
+  $('menu').addEventListener('click', (e) => {
+    const _b = e.target.closest('button'); const act = _b ? _b.dataset.act : null;
+    if (act === 'install') install(); else if (act === 'update') checkUpdate(true);
+  });
+
+  if ('serviceWorker' in navigator) {
+    const hadController = !!navigator.serviceWorker.controller;
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController && !reloaded) { reloaded = true; location.reload(); } });
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').then((r) => {
+        reg = r;
+        if (r.waiting && navigator.serviceWorker.controller) offer(r.waiting);
+        r.addEventListener('updatefound', () => {
+          const w = r.installing;
+          w && w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) offer(w); });
+        });
+        checkUpdate(false);
+      }).catch(() => {});
+    });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && reg) reg.update().then(() => { if (reg.waiting) offer(reg.waiting); }).catch(() => {}); });
+  }
+})();
+</script>
+<script>
+(function () {
+  var KEY = 'hdc-big', root = document.documentElement;
+  function get() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function put(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+  function apply(on) { root.classList.toggle('big', on); var el = document.getElementById('bigState'); if (el) el.textContent = on ? 'เปิด' : 'ปิด'; }
+  apply(get() === '1');
+  document.getElementById('menu').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (b && b.dataset.act === 'big') { var on = !root.classList.contains('big'); apply(on); put(on ? '1' : '0'); toast(on ? '🚗 เปิดโหมดจอใหญ่' : 'ปิดโหมดจอใหญ่'); }
+  });
+})();
+</script>
+</body>
+</html>
